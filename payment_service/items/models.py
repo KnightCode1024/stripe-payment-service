@@ -11,7 +11,7 @@ class Item(models.Model):
     description = models.TextField(
         verbose_name="Описание товара",
     )
-    price = models.IntegerField( # Цена а копейках/центах
+    price = models.IntegerField(  # Цена а копейках/центах
         verbose_name="Цена",
     )
 
@@ -29,3 +29,14 @@ class Item(models.Model):
     @property
     def price_display(self):
         return f"{self.price_decimal:.2f} руб./$"
+
+
+class Order(models.Model):
+    pass
+
+
+class Discount(models.Model):
+    pass
+
+class Tax(models.Model):
+    pass

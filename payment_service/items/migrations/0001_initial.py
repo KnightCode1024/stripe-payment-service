@@ -7,21 +7,36 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Item',
+            name="Item",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=64, verbose_name='Название товара')),
-                ('description', models.TextField(verbose_name='Описание товара')),
-                ('price', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Цена')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=64, verbose_name="Название товара"),
+                ),
+                ("description", models.TextField(verbose_name="Описание товара")),
+                (
+                    "price",
+                    models.DecimalField(
+                        decimal_places=2, max_digits=10, verbose_name="Цена"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Товар',
-                'verbose_name_plural': 'Товары',
+                "verbose_name": "Товар",
+                "verbose_name_plural": "Товары",
             },
         ),
     ]

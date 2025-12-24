@@ -19,4 +19,3 @@ urlpatterns = [
         name="create_checkout_session",
     ),
 ]
-

@@ -16,5 +16,5 @@ class ItemView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['stripe_publishable_key'] = settings.STRIPE_PUBLISHABLE_KEY
+        context["stripe_publishable_key"] = settings.STRIPE_PUBLISHABLE_KEY
         return context
