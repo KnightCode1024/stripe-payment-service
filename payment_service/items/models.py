@@ -71,7 +71,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name="order_items", 
+        related_name="order_items",
         verbose_name="Заказ",
     )
     item = models.ForeignKey(
@@ -102,7 +102,6 @@ class OrderItem(models.Model):
     @property
     def total_price_display(self):
         return Decimal(self.total_price) / Decimal(100)
-
 
 
 # class Discount(models.Model):
