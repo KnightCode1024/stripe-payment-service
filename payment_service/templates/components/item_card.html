@@ -28,8 +28,8 @@
 </div>
 
 <script type="text/javascript">
-    if (typeof stripe === 'undefined') {
-            stripe = Stripe('{{ stripe_publishable_key }}');
+    if (typeof window.stripe === 'undefined') {
+            window.stripe = Stripe('{{ stripe_publishable_key }}');
         }
 
     let countItems_id_{{ item.pk}} = 1
@@ -37,15 +37,18 @@
     const incrementButton_id_{{ item.pk }} = document.getElementById('increment-button-id-{{ item.pk }}')
     const decrementButton_id_{{ item.pk }} = document.getElementById('decrement-button-id-{{ item.pk }}')
 
+    // const minItemValue_id_{{ item.pk }} = 1
+
+
 
     incrementButton_id_{{ item.pk }}.addEventListener('click', function() {
-        countItems_id_{{ item.pk}} ++
+        countItems_{{ item.pk }} ++
         countItemsElement_id_{{ item.pk }}.textContent = countItems_id_{{ item.pk }};
     })
 
     decrementButton_id_{{ item.pk }}.addEventListener('click', function() {
         if (countItems_id_{{ item.pk }} > 1) {
-            countItems_id_{{ item.pk }} --
+            countItems_{{ item.pk }} --
             countItemsElement_id_{{ item.pk }}.textContent = countItems_id_{{ item.pk }};
         }
     })
