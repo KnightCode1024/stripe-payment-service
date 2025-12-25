@@ -13,13 +13,13 @@
             </button>
 
             <div class="btn-group" role="group">
-                <button id="decrement-button-id-{{ item.pk }}" class="btn btn-outline-secondary btn-lg py-3" id="decrement-button">
+                <button id="decrement-button-id-{{ item.pk }}" class="btn btn-outline-secondary btn-lg py-3" type="button">
                     <span class="bi bi-dash-lg">-</span>
                 </button>
-                <button class="btn btn-outline-dark btn-lg py-3 px-4 disabled" id="quantity-display">
-                    <span id="count-items-id-{{ item.pk }}" class="fs-5 fw-bold">1</span>
+                <button class="btn btn-outline-dark btn-lg py-3 px-4 disabled quantity-display" data-item-id="{{ item.pk }}" type="button">
+                    <span id="count-items-id-{{ item.pk }}" class="fs-5 fw-bold">0</span>
                 </button>
-                <button id="increment-button-id-{{ item.pk }}" class="btn btn-outline-secondary btn-lg py-3" id="increment-button">
+                <button id="increment-button-id-{{ item.pk }}" class="btn btn-outline-secondary btn-lg py-3" type="button">
                     <span class="bi bi-plus-lg">+</span>
                 </button>
             </div>
@@ -36,9 +36,6 @@
     let countItemsElement_id_{{ item.pk }} = document.getElementById('count-items-id-{{ item.pk }}')
     const incrementButton_id_{{ item.pk }} = document.getElementById('increment-button-id-{{ item.pk }}')
     const decrementButton_id_{{ item.pk }} = document.getElementById('decrement-button-id-{{ item.pk }}')
-
-    // const minItemValue_id_{{ item.pk }} = 1
-
 
 
     incrementButton_id_{{ item.pk }}.addEventListener('click', function() {

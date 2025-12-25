@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView
+from django.views.generic import DetailView, TemplateView
 from django.views.generic.list import ListView
 
-from .models import Item
+from .models import Item, Order, Discount, Tax
 
 
 class ItemView(DetailView):
@@ -30,3 +30,14 @@ class ItemListView(ListView):
         context["stripe_publishable_key"] = settings.STRIPE_PUBLISHABLE_KEY
         return context
 
+
+class CreateOrderView(TemplateView):
+    template_name = "create_order.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["items"] = Item.objects.all()
+        context["discounts"] = Discount.objects.filter(is_active=True)
+        context["taxes"] = Tax.objects.filter(is_active=True)
+        context["stripe_publishable_key"] = settings.STRIPE_PUBLISHABLE_KEY
+        return context

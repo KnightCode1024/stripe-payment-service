@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создать заказ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1 class="mb-4">Создать заказ</h1>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Выберите товары</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="items-container">
+                            {% for item in items %}
+                            <div class="item-row border-bottom pb-3 mb-3" data-item-id="{{ item.pk }}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ item.name }}</h6>
+                                        <p class="text-muted small mb-1">{{ item.description }}</p>
+                                        <span class="fw-bold text-primary">{{ item.price_display }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button class="btn btn-outline-secondary btn-sm decrement-btn" data-item-id="{{ item.pk }}">
+                                            <span class="bi bi-dash">-</span>
+                                        </button>
+                                        <span class="quantity-display fw-bold px-3" data-item-id="{{ item.pk }}">0</span>
+                                        <button class="btn btn-outline-secondary btn-sm increment-btn" data-item-id="{{ item.pk }}">
+                                            <span class="bi bi-plus">+</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted">Товаров пока нет</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Скидки и налоги</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="discount-select" class="form-label">Скидка</label>
+                                <select class="form-select" id="discount-select">
+                                    <option value="">Без скидки</option>
+                                    {% for discount in discounts %}
+                                    <option value="{{ discount.pk }}">{{ discount.name }} ({{ discount.value }}{% if discount.discount_type == 'percent' %}%{% else %} руб.{% endif %})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tax-select" class="form-label">Налог</label>
+                                <select class="form-select" id="tax-select">
+                                    <option value="">Без налога</option>
+                                    {% for tax in taxes %}
+                                    <option value="{{ tax.pk }}">{{ tax.name }} ({{ tax.value }}{% if tax.tax_type == 'percent' %}%{% else %} руб.{% endif %})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card sticky-top" style="top: 20px;">
+                    <div class="card-header">
+                        <h5 class="mb-0">Итого</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="order-summary">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Подытог:</span>
+                                <span id="subtotal">0.00 руб.</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2" id="discount-row" style="display: none;">
+                                <span>Скидка:</span>
+                                <span id="discount-amount">0.00 руб.</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2" id="tax-row" style="display: none;">
+                                <span>Налог:</span>
+                                <span id="tax-amount">0.00 руб.</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold fs-5">
+                                <span>Итого:</span>
+                                <span id="total">0.00 руб.</span>
+                            </div>
+                        </div>
+
+                        <button id="checkout-button" class="btn btn-primary btn-lg w-100 mt-4" disabled>
+                            <i class="bi bi-credit-card me-2"></i>Оплатить заказ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (typeof stripe === 'undefined') {
+            stripe = Stripe('{{ stripe_publishable_key }}');
+        }
+
+        // Данные товаров и их цены
+        const itemsData = {
+            {% for item in items %}
+            {{ item.pk }}: {
+                name: '{{ item.name }}',
+                price: {{ item.price }},
+                price_decimal: {{ item.price_decimal }}
+            },
+            {% endfor %}
+        };
+
+        // Данные скидок
+        const discountsData = {
+            {% for discount in discounts %}
+            {{ discount.pk }}: {
+                type: '{{ discount.discount_type }}',
+                value: {{ discount.value }}
+            },
+            {% endfor %}
+        };
+
+        // Данные налогов
+        const taxesData = {
+            {% for tax in taxes %}
+            {{ tax.pk }}: {
+                type: '{{ tax.tax_type }}',
+                value: {{ tax.value }}
+            },
+            {% endfor %}
+        };
+
+        // Корзина
+        let cart = {};
+        let selectedDiscount = null;
+        let selectedTax = null;
+
+        // Обработчики для кнопок количества
+        document.querySelectorAll('.increment-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const itemId = this.dataset.itemId;
+                updateQuantity(itemId, 1);
+            });
+        });
+
+        document.querySelectorAll('.decrement-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const itemId = this.dataset.itemId;
+                updateQuantity(itemId, -1);
+            });
+        });
+
+        // Обработчики для скидок и налогов
+        document.getElementById('discount-select').addEventListener('change', function() {
+            selectedDiscount = this.value || null;
+            updateOrderSummary();
+        });
+
+        document.getElementById('tax-select').addEventListener('change', function() {
+            selectedTax = this.value || null;
+            updateOrderSummary();
+        });
+
+        function updateQuantity(itemId, change) {
+            if (!cart[itemId]) {
+                cart[itemId] = 0;
+            }
+            cart[itemId] = Math.max(0, cart[itemId] + change);
+            document.querySelector(`.quantity-display[data-item-id="${itemId}"]`).textContent = cart[itemId];
+            updateOrderSummary();
+        }
+
+        function updateOrderSummary() {
+            let subtotal = 0;
+
+            // Расчет подытога
+            Object.keys(cart).forEach(itemId => {
+                const quantity = cart[itemId];
+                if (quantity > 0 && itemsData[itemId]) {
+                    subtotal += itemsData[itemId].price * quantity;
+                }
+            });
+
+            // Расчет скидки
+            let discountAmount = 0;
+            if (selectedDiscount && discountsData[selectedDiscount]) {
+                const discount = discountsData[selectedDiscount];
+                if (discount.type === 'percent') {
+                    discountAmount = Math.round(subtotal * (discount.value / 100));
+                } else {
+                    discountAmount = Math.min(Math.round(discount.value * 100), subtotal); // Конвертируем в копейки
+                }
+            }
+
+            // Расчет налога
+            let taxAmount = 0;
+            const amountAfterDiscount = subtotal - discountAmount;
+            if (selectedTax && taxesData[selectedTax]) {
+                const tax = taxesData[selectedTax];
+                if (tax.type === 'percent') {
+                    taxAmount = Math.round(amountAfterDiscount * (tax.value / 100));
+                } else {
+                    taxAmount = Math.round(tax.value * 100); // Конвертируем в копейки
+                }
+            }
+
+            const total = subtotal - discountAmount + taxAmount;
+
+            // Обновление отображения
+            document.getElementById('subtotal').textContent = (subtotal / 100).toFixed(2) + ' руб.';
+            document.getElementById('total').textContent = (total / 100).toFixed(2) + ' руб.';
+
+            const discountRow = document.getElementById('discount-row');
+            const taxRow = document.getElementById('tax-row');
+
+            if (discountAmount > 0) {
+                document.getElementById('discount-amount').textContent = '-' + (discountAmount / 100).toFixed(2) + ' руб.';
+                discountRow.style.display = 'block';
+            } else {
+                discountRow.style.display = 'none';
+            }
+
+            if (taxAmount > 0) {
+                document.getElementById('tax-amount').textContent = '+' + (taxAmount / 100).toFixed(2) + ' руб.';
+                taxRow.style.display = 'block';
+            } else {
+                taxRow.style.display = 'none';
+            }
+
+            // Активация/деактивация кнопки оплаты
+            const checkoutButton = document.getElementById('checkout-button');
+            const hasItems = Object.values(cart).some(quantity => quantity > 0);
+            checkoutButton.disabled = !hasItems;
+        }
+
+        // Обработчик кнопки оплаты
+        document.getElementById('checkout-button').addEventListener('click', function() {
+            const items = Object.keys(cart)
+                .filter(itemId => cart[itemId] > 0)
+                .map(itemId => ({
+                    item_id: parseInt(itemId),
+                    quantity: cart[itemId]
+                }));
+
+            const orderData = {
+                items: items,
+                discount_id: selectedDiscount ? parseInt(selectedDiscount) : null,
+                tax_id: selectedTax ? parseInt(selectedTax) : null
+            };
+
+            fetch('/buy/order/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Ошибка: ' + data.error);
+                } else {
+                    stripe.redirectToCheckout({ sessionId: data.id });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при создании заказа');
+            });
+        });
+
+        function getCsrfToken() {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+            return csrfToken ? csrfToken.value : '';
+        }
+    </script>
+</body>
+</html>
