@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.db import models
+from django.core.validators import MinValueValidator
 
 
 class Item(models.Model):
@@ -31,12 +32,33 @@ class Item(models.Model):
         return f"{self.price_decimal:.2f} руб./$"
 
 
+class OrderItem(models.Model):
+    quantity = models.IntegerField(
+        verbose_name="Количество",
+        default=1,
+        validators=[
+            MinValueValidator(1),
+        ],
+        help_text="Количество единиц товара при заказе должно быть >= 1",
+    )
+    item = models.OneToOneField(
+        Item,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+
+
 class Order(models.Model):
-    pass
+    order_item = models.ForeignKey(
+        OrderItem,
+        on_delete=models.CASCADE,
+        related_name="order_items",
+    )
 
 
-class Discount(models.Model):
-    pass
-
-class Tax(models.Model):
-    pass
+# class Discount(models.Model):
+#     pass
+#
+#
+# class Tax(models.Model):
+#     pass
