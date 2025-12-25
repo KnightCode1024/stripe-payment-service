@@ -32,29 +32,30 @@
             window.stripe = Stripe('{{ stripe_publishable_key }}');
         }
 
-    let countItems = 1
-    let countItemsElement = document.getElementById('count-items-id-{{ item.pk }}')
-    const incrementButton = document.getElementById('increment-button-id-{{ item.pk }}')
-    const decrementButton = document.getElementById('decrement-button-id-{{ item.pk }}')
-    const minItemValue = 1
+    let countItems_id_{{ item.pk}} = 1
+    let countItemsElement_id_{{ item.pk }} = document.getElementById('count-items-id-{{ item.pk }}')
+    const incrementButton_id_{{ item.pk }} = document.getElementById('increment-button-id-{{ item.pk }}')
+    const decrementButton_id_{{ item.pk }} = document.getElementById('decrement-button-id-{{ item.pk }}')
+    
+    // const minItemValue_id_{{ item.pk }} = 1
 
 
 
-    incrementButton.addEventListener('click', function() {
-        countItems ++
-        countItemsElement.textContent = countItems;
+    incrementButton_id_{{ item.pk }}.addEventListener('click', function() {
+        countItems_{{ item.pk }} ++
+        countItemsElement_id_{{ item.pk }}.textContent = countItems_id_{{ item.pk }};
     })
 
-    decrementButton.addEventListener('click', function() {
-        if (countItems > 1) {
-            countItems --
-            countItemsElement.textContent = countItems;
+    decrementButton_id_{{ item.pk }}.addEventListener('click', function() {
+        if (countItems_id_{{ item.pk }} > 1) {
+            countItems_{{ item.pk }} --
+            countItemsElement_id_{{ item.pk }}.textContent = countItems_id_{{ item.pk }};
         }
     })
 
-    const buyButton = document.getElementById('buy-button-id-{{ item.pk }}');
+    const buyButton_id_{{ item.pk }} = document.getElementById('buy-button-id-{{ item.pk }}');
 
-    buyButton.addEventListener('click', function () {
+    buyButton_id_{{ item.pk }}.addEventListener('click', function () {
         fetch('/buy/{{ item.pk }}/', { method: 'GET' })
             .then(response => response.json())
             .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
