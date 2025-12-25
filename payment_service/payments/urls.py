@@ -18,9 +18,4 @@ urlpatterns = [
         views.CreateCheckoutStripeSessionView.as_view(),
         name="create_checkout_session",
     ),
-    path(
-        "order/",
-        views.CreateOrderCheckoutSessionView.as_view(),
-        name="create_order_checkout_session",
-    ),
 ]

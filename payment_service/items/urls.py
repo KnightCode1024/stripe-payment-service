@@ -12,10 +12,5 @@ urlpatterns = [
         "",
         views.ItemListView.as_view(),
         name="items_list",
-    ),
-    path(
-        "order/create/",
-        views.CreateOrderView.as_view(),
-        name="create_order",
     )
 ]
