@@ -28,27 +28,27 @@
 </div>
 
 <script type="text/javascript">
-    if (typeof window.stripe === 'undefined') {
-            window.stripe = Stripe('{{ stripe_publishable_key }}');
+    if (typeof stripe === 'undefined') {
+            stripe = Stripe('{{ stripe_publishable_key }}');
         }
 
     let countItems_id_{{ item.pk}} = 1
     let countItemsElement_id_{{ item.pk }} = document.getElementById('count-items-id-{{ item.pk }}')
     const incrementButton_id_{{ item.pk }} = document.getElementById('increment-button-id-{{ item.pk }}')
     const decrementButton_id_{{ item.pk }} = document.getElementById('decrement-button-id-{{ item.pk }}')
-    
+
     // const minItemValue_id_{{ item.pk }} = 1
 
 
 
     incrementButton_id_{{ item.pk }}.addEventListener('click', function() {
-        countItems_{{ item.pk }} ++
+        countItems_id_{{ item.pk}} ++
         countItemsElement_id_{{ item.pk }}.textContent = countItems_id_{{ item.pk }};
     })
 
     decrementButton_id_{{ item.pk }}.addEventListener('click', function() {
         if (countItems_id_{{ item.pk }} > 1) {
-            countItems_{{ item.pk }} --
+            countItems_id_{{ item.pk }} --
             countItemsElement_id_{{ item.pk }}.textContent = countItems_id_{{ item.pk }};
         }
     })
