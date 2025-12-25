@@ -1,0 +1,62 @@
+<div class="card border-0 shadow-lg" style="max-width: 500px;">
+    <div class="card-body p-4">
+        <h1 class="card-title h2 fw-bold text-dark mb-3">{{ item.name}}</h1>
+        <p class="card-text text-secondary mb-4">{{ item.description }}</p>
+
+        <div class="d-flex align-items-center mb-4">
+            <p class="h4 text-primary fw-bold mb-0">{{ item.price_display }}</p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <button id="buy-button-id-{{ item.pk }}" class="btn btn-primary btn-lg flex-grow-1 py-3">
+                <i class="bi bi-cart-check me-2"></i>Добавить в корзину
+            </button>
+
+            <div class="btn-group" role="group">
+                <button id="decrement-button-id-{{ item.pk }}" class="btn btn-outline-secondary btn-lg py-3" id="decrement-button">
+                    <span class="bi bi-dash-lg">-</span>
+                </button>
+                <button class="btn btn-outline-dark btn-lg py-3 px-4 disabled" id="quantity-display">
+                    <span id="count-items-id-{{ item.pk }}" class="fs-5 fw-bold">1</span>
+                </button>
+                <button id="increment-button-id-{{ item.pk }}" class="btn btn-outline-secondary btn-lg py-3" id="increment-button">
+                    <span class="bi bi-plus-lg">+</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    if (typeof window.stripe === 'undefined') {
+            window.stripe = Stripe('{{ stripe_publishable_key }}');
+        }
+
+    let countItems = 1
+    let countItemsElement = document.getElementById('count-items-id-{{ item.pk }}')
+    const incrementButton = document.getElementById('increment-button-id-{{ item.pk }}')
+    const decrementButton = document.getElementById('decrement-button-id-{{ item.pk }}')
+    const minItemValue = 1
+
+
+
+    incrementButton.addEventListener('click', function() {
+        countItems ++
+        countItemsElement.textContent = countItems;
+    })
+
+    decrementButton.addEventListener('click', function() {
+        if (countItems > 1) {
+            countItems --
+            countItemsElement.textContent = countItems;
+        }
+    })
+
+    const buyButton = document.getElementById('buy-button-id-{{ item.pk }}');
+
+    buyButton.addEventListener('click', function () {
+        fetch('/buy/{{ item.pk }}/', { method: 'GET' })
+            .then(response => response.json())
+            .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
+    });
+</script>

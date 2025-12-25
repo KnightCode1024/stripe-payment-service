@@ -8,34 +8,7 @@
 
 <body>
   <div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card border-0 shadow-lg" style="max-width: 500px;">
-      <div class="card-body p-4">
-        <h1 class="card-title h2 fw-bold text-dark mb-3">{{ item.name}}</h1>
-
-        <img src="" class="card-img-top" alt="{{ item.name}}">
-
-        <p class="card-text text-secondary mb-4">{{ item.description }}</p>
-
-        <div class="d-flex align-items-center mb-4">
-          <p class="h4 text-primary fw-bold">{{ item.price_display }}</p>
-        </div>
-
-        <button id="buy-button" class="btn btn-primary btn-lg w-100 py-3">
-          Купить
-        </button>
-      </div>
-    </div>
+    {% include "components/item_card.html" %}
   </div>
-
-  <script type="text/javascript">
-    var stripe = Stripe('{{ stripe_publishable_key }}');
-    var buyButton = document.getElementById('buy-button');
-    buyButton.addEventListener('click', function () {
-      fetch('/buy/{{ item.pk }}/', { method: 'GET' })
-        .then(response => response.json())
-        .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
-    });
-  </script>
 </body>
-
 </html>
