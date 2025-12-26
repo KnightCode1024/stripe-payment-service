@@ -40,13 +40,13 @@ services:
       - postgres
 
   certbot:
-    image: certbot/certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    command: sh -c "certbot certonly --webroot --webroot-path=/var/www/certbot --email ${ADMIN_EMAIL} --agree-tos --no-eff-email -d kirillblog.ru -d www.kirillblog.ru --non-interactive --keep-until-expiring"
-    depends_on:
-      - nginx
+  image: certbot/certbot
+  volumes:
+    - ./certbot/conf:/etc/letsencrypt
+    - ./certbot/www:/var/www/certbot
+  command: certonly --webroot --webroot-path=/var/www/certbot --email ${ADMIN_EMAIL} --agree-tos --no-eff-email -d kirillblog.ru -d www.kirillblog.ru --non-interactive --keep-until-expiring
+  depends_on:
+    - nginx
 
 volumes:
   postgres-data:
