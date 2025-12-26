@@ -35,5 +35,5 @@ ADMIN_EMAIL=test@gmail.com # Нужно только для ssl сертифик
 `compose.dev.yml` - запуск на сервере
 
 ```bash
-docker-compose -f compose.dev.yml --build -d
+docker-compose -f compose.dev.yml up --build -d
 ```
