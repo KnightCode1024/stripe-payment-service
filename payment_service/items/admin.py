@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Item, OrderItem, Order
+from .models import Item
 from .forms import ItemForm
 
 
@@ -13,11 +13,3 @@ class ItemAdmin(admin.ModelAdmin):
 
     get_price_display.short_description = "Цена"
     get_price_display.admin_order_field = "price"
-
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(OrderItem)
-class OrderItemAdmin(admin.ModelAdmin):
-    pass
