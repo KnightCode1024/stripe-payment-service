@@ -29,7 +29,7 @@ services:
     image: payment_service
     container_name: payment_service
     restart: always
-    command: sh -c "python manage.py migrate && gunicorn -c gunicorn.py payment_service.wsgi"
+    command: sh -c "python manage.py migrate && gunicorn -c gunicorn.py config.wsgi"
     env_file:
       - .env
     volumes:
