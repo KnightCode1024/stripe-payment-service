@@ -1,7 +1,22 @@
 # stripe-payment-service
 Платёжный сервис на Django + Stripe API
 
-Решение можно посмотреть на ..
+# Информация для ревьюера
+- Доступ к админке (Пароль - root; Логин - root)
+
+- https://kirillblog.ru/item/ - все товары
+- https://kirillblog.ru/item/1/ - конкретный товар
+- https://kirillblog.ru/buy/1/ - ручка для созданиие stripe сессии
+- https://kirillblog.ru/admin/ - админка
+
+# Контакты
+https://t.me/ProstoKiReal
+
+# Технологии
+- Django
+- Stripe API
+- Docker
+- Nginx
 
 ## Что реализовано?
 - `GET /buy/{id}` получение stripe сессии на покупку товара
