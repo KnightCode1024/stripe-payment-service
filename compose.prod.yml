@@ -11,6 +11,9 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+      - ./payment_service/static:/app/www/payment_service/static
+      - ./payment_service/static:/app/www/payment_service/staticfiles
+
     depends_on:
       - payment_service
 
