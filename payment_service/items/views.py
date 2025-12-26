@@ -20,6 +20,7 @@ class ItemView(DetailView):
         context["stripe_publishable_key"] = settings.STRIPE_PUBLISHABLE_KEY
         return context
 
+
 class ItemListView(ListView):
     model = Item
     template_name = "items.html"
@@ -29,4 +30,3 @@ class ItemListView(ListView):
         context = super().get_context_data(**kwargs)
         context["stripe_publishable_key"] = settings.STRIPE_PUBLISHABLE_KEY
         return context
-

@@ -102,11 +102,3 @@ class OrderItem(models.Model):
     @property
     def total_price_display(self):
         return Decimal(self.total_price) / Decimal(100)
-
-
-# class Discount(models.Model):
-#     pass
-#
-#
-# class Tax(models.Model):
-#     pass
